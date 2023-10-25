@@ -4,7 +4,11 @@ Ortho-graph project
 Given a graph description, compute orthogonal routes between the graphs nodes.
 
 ```
-json/perl/xml/dot | translator | graph description | ortho-graph | visualisation tool
+ortho-graph graph_description.yaml
+
+cat graph_description.yaml | ortho-graph 
+
+cat yaml/json/perl/xml/dot | translator | ortho-graph | visualisation-tool
 ```
 
 # Links
@@ -58,6 +62,11 @@ passed as-is to output
 - edge title/text
 - node shape
 
+    
+```
+user_attributes = { ... }
+```
+
 ### node coordinates
 
 - no coordinates, default case
@@ -67,15 +76,16 @@ passed as-is to output
 ### route    
 
 - no route, default case
-- specify a route between two nodes
+- specify an edge length
 
 ### types of object
 
+- graph
 - node
 - edge
 - group
 
-
+See *definitions* file.
 
 ### edge specification
 
@@ -95,6 +105,14 @@ C-->D
 
 - minimal edge turns
 - minimal edge overlap
+
+```
+options = 
+	{
+	A = { ... },
+	'A -> B' = { ... }
+	}
+```
 
 # Routed graph description
 

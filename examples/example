@@ -1,0 +1,12 @@
+# this is a yaml file
+
+{
+graph: 
+	{ 
+	A: B,        # node A has an edge to node B
+	B: [ C, D ], # node B has edges to nodes C and D
+	C: D
+	}
+}
+
+

@@ -1,0 +1,18 @@
+# Graph 
+
+A graph ‘G’ is a set of vertices 'v' connected by edges 'e': G = (v, e)
+
+## Synonyms
+
+- vertex: node
+- edge: link
+
+# Edge
+
+An edge can be:
+- uni-directional, information flows from one vertex to another
+- bi-directional, information flows between two vertices
+
+# Group
+
+Set of vertices sharing a common attribute

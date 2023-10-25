@@ -1,3 +1,15 @@
+# Graph description
+
+we compute N and E from G
+N = { A, B, C, D }
+E = { AB, BC, CD }
+
+G = 
+	{ 
+	A -> B,
+	B -> C,
+	C -> D 
+	}
 
 # Implementation Ideas
 

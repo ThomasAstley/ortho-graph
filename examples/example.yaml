@@ -1,0 +1,6 @@
+G:
+  A:
+    - B
+    - D
+  B: C
+  C: D # C links to D 
