@@ -31,8 +31,7 @@ cat yaml/json/perl/xml/dot | translator | ortho-graph | visualisation-tool
 
 [documentation](http://docs.yworks.com/yfiles/doc/developers-guide/orthogonal_edge_router.html)
 
-# Input
-
+# Graph description (input)
 
 ## Format
 
@@ -114,7 +113,7 @@ options =
 	}
 ```
 
-# Routed graph description
+# Routed graph description (output)
 
 ## Nodes
 
@@ -136,5 +135,8 @@ an edge consists of one or more legs
 # Future ideas
 
 - add new node to pre-rendered graph with minimal changes
-    - pre-rendered graph rendered by ortho-graph
-    - manually rendered graph
+	- pre-rendered graph rendered by ortho-graph
+		- keep computation data to speedup new routing
+	- manually rendered graph
+
+
