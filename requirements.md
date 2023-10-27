@@ -133,3 +133,8 @@ an edge consists of one or more legs
 - start coordinate
 - end coordinate
 
+# Future ideas
+
+- add new node to pre-rendered graph with minimal changes
+    - pre-rendered graph rendered by ortho-graph
+    - manually rendered graph
