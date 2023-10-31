@@ -2,8 +2,7 @@
 # License: GNU GPL version 3
 
 import yaml
-
-file_path = '/home/tom-kubuntu/tom/devel/ortho-graph/examples/example'
+import sys
 
 def read_yaml(file_path):
     with open(file_path) as stream:
@@ -24,7 +23,17 @@ def parse_yaml(data):
                 e.append(node + edge)
             
     return g, n, e
-data = read_yaml(file_path)
-graph = parse_yaml(data)
-print('Graph: ', graph[0], '\nNodes: ', graph[1], '\nEdges: ', graph[2])
 
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: ortho-graph graph_description.yaml")
+        exit(2)
+    else:
+        # Access the command line arguments
+        file_path = sys.argv[1]
+
+    data = read_yaml(file_path)
+    graph = parse_yaml(data)
+    print('Graph: ', graph[0], '\nNodes: ', graph[1], '\nEdges: ', graph[2])
+
+main()
