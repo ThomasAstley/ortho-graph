@@ -1,28 +1,35 @@
 #!/bin/env python
 # License: GNU GPL version 3
 
-import yaml
 import sys
+import yaml
+from PrettyPrint import PrettyPrintTree
 
-def read_yaml(file_path):
+def parse_graph_description(file_path):
     with open(file_path) as stream:
         try:
-            return yaml.safe_load(stream)
+            data = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
+    
+    pt = PrettyPrintTree()
+    pt.print_json(data, orientation=PrettyPrintTree.Horizontal)
 
-def parse_yaml(data):
-    g = []
-    n = []
-    e = []
+    g = {}
+
     for graph in data:
-        g.append(graph)
+        n = []
+        e = []
+
         for node in data[graph]:
             n.append(node)
-            for edge in data[graph][node]:
-                e.append(node + edge)
-            
-    return g, n, e
+
+            for target_node in data[graph][node]:
+                e.append({node: target_node})
+
+        g[graph] = {'nodes': n,'edges': e} 
+        
+    return g 
 
 def main():
     if len(sys.argv) != 2:
@@ -32,8 +39,9 @@ def main():
         # Access the command line arguments
         file_path = sys.argv[1]
 
-    data = read_yaml(file_path)
-    graph = parse_yaml(data)
-    print('Graph: ', graph[0], '\nNodes: ', graph[1], '\nEdges: ', graph[2])
+    graph = parse_graph_description(file_path)
+    #print('Graphs: ', graph)
+    pt = PrettyPrintTree()
+    pt.print_json(graph, orientation=PrettyPrintTree.Horizontal)
 
 main()
