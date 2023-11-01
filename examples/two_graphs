@@ -3,14 +3,14 @@
 {
 Graph: 
   { 
-  A: B,        # node A has an edge to node B
+  A: [ B ],        # node A has an edge to node B
   B: [ C, D ], # node B has edges to nodes C and D
-  C: D
+  C: [ D ]
   },
 
 A: 
   { 
-  1: a,
-  2: b, 
+  1: [ a ],
+  2: [ b ], 
   }
 }

@@ -11,6 +11,13 @@ G =
 	C -> D 
 	}
 
+# Routing Algorithm
+
+- read graph description
+- transform to get list of nodes and edges
+- assign position to each node
+- calculate edges 
+
 # Implementation Ideas
 
 Min change of direction:

@@ -89,16 +89,9 @@ See *definitions* file.
 ### edge specification
 
 ```
-A,B,C-->D
+A: { B, C, ... }
 ```
-
-Equivalent 
-
-```
-A-->D
-B-->D
-C-->D
-```
+Defines edges AB, AC, ...
 
 # Computation
 
@@ -106,11 +99,29 @@ C-->D
 - minimal edge overlap
 
 ```
-options = 
-	{
-	A = { ... },
-	'A -> B' = { ... }
-	}
+{
+edges: 
+  { 
+  A: [ B ],        # node A has an edge to node B
+  B: [ C, D ],     # node B has edges to nodes C and D
+  C: [ D ]
+  },
+options:
+    {
+    node: 
+        {
+        A: { ... }
+        },
+    edges:
+        {
+        'A':
+            {
+            'B': {...},
+            'C': {...} 
+            }
+        }
+    }
+}
 ```
 
 # Routed graph description (output)

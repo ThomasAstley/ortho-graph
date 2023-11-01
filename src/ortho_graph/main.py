@@ -8,25 +8,33 @@ from PrettyPrint import PrettyPrintTree
 def parse_graph_descriptions(file_path):
     with open(file_path) as stream:
         try:
-            data = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
+            graph_descriptions = yaml.safe_load(stream)
+        except yaml.YAMLError as exception:
+            print(exception)
     
-    g = {}
+    graphs = {}
 
-    for graph in data:
-        n = []
-        e = []
+    for graph_name in graph_descriptions:
+        graph = graph_descriptions[graph_name]
 
-        for node in data[graph]:
-            n.append(node)
+        edges = []
+        discovered_node_names = {*graph}
 
-            for target_node in data[graph][node]:
-                e.append({node: target_node})
+        for node_name in graph:
+            node = graph[node_name]
 
-        g[graph] = {'nodes': n,'edges': e} 
+            for target_node_name in node:
+                edges.append({node_name: target_node_name})
+
+                if target_node_name not in discovered_node_names:
+                    discovered_node_names.add(target_node_name)
         
-    return g 
+        for node_name in discovered_node_names.difference({*graph}):
+            graph[node_name] = []
+
+        graphs[graph_name] = {'nodes': {*graph},'edges': edges} 
+
+    return graphs 
 
 def print_graph(data):
     pt = PrettyPrintTree()
@@ -41,9 +49,10 @@ def main():
         file_path = sys.argv[1]
 
     graphs = parse_graph_descriptions(file_path)
-    #print('Graphs: ', graphs)
+    print('Graphs: ', graphs)
     pt = PrettyPrintTree()
     pt.print_json(graphs, orientation=PrettyPrintTree.Horizontal)
 
 if __name__ == '__main__':
     main()
+
