@@ -3,7 +3,7 @@
 
 	ortho-graph - compute orthogonal routing
 
-![TUI](https://github.com/)
+![Simple Graph](https://github.com/ThomasAstley/ortho-graph/blob/main/examples/simple_graph.png)
 
 # SYNOPSIS
 
@@ -37,6 +37,7 @@ An edge can be:
 Set of nodes sharing a common attribute
 
 # OPTIONS      
+
 # EXIT STATUS  
 
 | code | description |
@@ -46,6 +47,11 @@ Set of nodes sharing a common attribute
 |  10  | invalid graph description |
 
 # EXAMPLES
+
+
+
+
+
 # COPYRIGHT AND LICENSE  
 
 Thomas Astley 2023
