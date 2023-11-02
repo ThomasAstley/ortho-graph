@@ -11,7 +11,8 @@ def parse_graph_descriptions(file_path):
             graph_descriptions = yaml.safe_load(stream)
         except yaml.YAMLError as exception:
             print(exception)
-    
+            exit(10)
+
     graphs = {}
 
     for graph_name in graph_descriptions:

@@ -1,0 +1,12 @@
+# this is an invalid yaml file
+
+{
+Graph: 
+  { 
+  A: { B }        # error: comma missing 
+  B: { C, D },    
+  C: { D }
+  }
+}
+
+

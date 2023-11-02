@@ -11,26 +11,6 @@ cat graph_description.yaml | ortho-graph
 cat yaml/json/perl/xml/dot | translator | ortho-graph | visualisation-tool
 ```
 
-# Links
-
-## Orthogonal Layouts (1/5): Topology - Shape - Metrics | Visualization of Graphs - Lecture 6
-
-[Lecture](https://www.youtube.com/watch?v=v-epJF7KAOY)
-
-## Graph::Easy
-
-[cpan](https://metacpan.org/pod/Graph::Easy)
-
-[documentation](http://bloodgate.com/perl/graph/manual/overview.html)
-
-## Orthogonal Connector Routing
-
-[module](https://github.com/Bukk94/OrthogonalConnectorRouting)
-
-## Orthogonal edge router
-
-[documentation](http://docs.yworks.com/yfiles/doc/developers-guide/orthogonal_edge_router.html)
-
 # Graph description (input)
 
 ## Format

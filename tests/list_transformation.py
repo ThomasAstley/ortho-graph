@@ -2,11 +2,22 @@
 
 import unittest
 import pprint
+import subprocess
 
 from src.ortho_graph.main import parse_graph_descriptions, print_graph 
 
 
 class TestTransformInputGraph(unittest.TestCase):
+    def test_invalid_graph_description(self):
+        """
+        Test invalid graph description, exits with code 10
+        """
+        
+        file_path = 'tests/list_transformation_invalid_graph_description'
+        
+        ortho_graph_process = subprocess.run(['python', 'src/ortho_graph/main.py', file_path], capture_output = True)
+        
+        self.assertEqual(ortho_graph_process.returncode, 10)
 
     def test_simple_graph(self):
         """
