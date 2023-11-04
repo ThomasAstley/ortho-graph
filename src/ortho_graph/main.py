@@ -41,6 +41,22 @@ def print_graph(data):
     pt = PrettyPrintTree()
     pt.print_json(data, orientation=PrettyPrintTree.Horizontal)
 
+def obtain_node_placement_orders(graphs):
+    placement_orders = {}
+    for graph in graphs:
+        placement_order = []
+        total_edges_per_node = {}
+        for node in graphs[graph]['nodes']:
+            total_edges_per_node[node] = 0
+            for edge in graphs[graph]['edges']:
+                for key, value in edge.items():
+                    if key == node or value == node:
+                        total_edges_per_node[node] += 1
+        placement_order = sorted(total_edges_per_node, key = lambda x: total_edges_per_node[x], reverse = True)
+        placement_orders[graph] = placement_order
+    return placement_orders
+        
+
 def main():
     if len(sys.argv) != 2:
         print("Usage: ortho-graph graph_description.yaml")
@@ -51,8 +67,10 @@ def main():
 
     graphs = parse_graph_descriptions(file_path)
     print('Graphs: ', graphs)
-    pt = PrettyPrintTree()
-    pt.print_json(graphs, orientation=PrettyPrintTree.Horizontal)
+    placement_orders = obtain_node_placement_orders(graphs)
+    print('placement orders: ', placement_orders)
+    #pt = PrettyPrintTree()
+    #pt.print_json(graphs, orientation=PrettyPrintTree.Horizontal)
 
 if __name__ == '__main__':
     main()

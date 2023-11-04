@@ -15,9 +15,12 @@ G =
 
 - read graph description
 - transform to get list of nodes and edges
-- assign position to each node
-- calculate edges 
-- start with node with most edges, assign to origin/centre
+
+- position
+	- assign position to each node
+	- start with node with most edges, assign to origin/centre
+ 
+- route edge 
 - add nodes a few units away in order of right, left, down, up
 - out of those pick the node with the highest edges and repeat
 - if the connecting node already exists, calculate shortest orthogonal route
