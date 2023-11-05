@@ -78,3 +78,8 @@ GNU GPL Version 3, see *LICENSE.txt* file
 
 [documentation](http://docs.yworks.com/yfiles/doc/developers-guide/orthogonal_edge_router.html)
 
+## Orthogonal Layout Algorithm Research papers
+
+[paper 1](https://arxiv.org/pdf/1807.09368.pdf)
+
+[paper 2](https://rtsys.informatik.uni-kiel.de/~biblio/downloads/theses/ocl-bt.pdf)

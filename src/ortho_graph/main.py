@@ -43,19 +43,42 @@ def print_graph(data):
 
 def obtain_node_placement_orders(graphs):
     placement_orders = {}
+
     for graph in graphs:
         placement_order = []
         total_edges_per_node = {}
+
         for node in graphs[graph]['nodes']:
             total_edges_per_node[node] = 0
+
             for edge in graphs[graph]['edges']:
                 for key, value in edge.items():
                     if key == node or value == node:
                         total_edges_per_node[node] += 1
+
         placement_order = sorted(total_edges_per_node, key = lambda x: total_edges_per_node[x], reverse = True)
         placement_orders[graph] = placement_order
+
     return placement_orders
-        
+
+def obtain_node_placements(graphs):
+    node_placements = {}
+
+    for graph in graphs:
+        number_of_nodes = len(graphs[graph]['nodes'])
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def main():
     if len(sys.argv) != 2:
