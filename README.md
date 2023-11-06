@@ -24,7 +24,6 @@ A graph ‘G’ is a set of nodes 'n' connected by edges 'e': G = (n, e)
 #### Synonyms
 
 - node: vertex
-- edge: link
 
 ### Edge
 

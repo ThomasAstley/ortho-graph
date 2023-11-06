@@ -3,4 +3,4 @@ G:
     - B
     - D
   B: C
-  C: D # C links to D 
+  C: D # node C has an edge to node D 
