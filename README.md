@@ -19,7 +19,7 @@ Given a graph description, compute orthogonal routes between the graphs nodes.
 
 ### Graph 
 
-A graph ‘G’ is a set of nodes 'n' connected by edges 'e': G = (n, e)
+A graph ‘G’ is a set of nodes 'n' connected by directional edges 'e': G = (n, e)
 
 #### Synonyms
 
@@ -27,9 +27,16 @@ A graph ‘G’ is a set of nodes 'n' connected by edges 'e': G = (n, e)
 
 ### Edge
 
-An edge can be:
-- uni-directional, information flows from one node to another
-- bi-directional, information flows between two nodes
+An edge is either:
+
+- uni-directional, from one node to another
+- bi-directional, between two nodes
+- from one node to itself
+
+Multiple edges:
+
+- for each pair of nodes
+- for each node
 
 ### Group
 
@@ -44,6 +51,8 @@ Set of nodes sharing a common attribute
 |  0   | graph routed ok |
 |  2   | wrong number of arguments |
 |  10  | invalid graph description |
+
+# DOCUMENTATION
 
 # EXAMPLES
 

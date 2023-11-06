@@ -19,21 +19,27 @@ def parse_graph_descriptions(file_path):
         graph = graph_descriptions[graph_name]
 
         edges = []
+        edges_per_node = {}
         discovered_node_names = {*graph}
+        edges_per_node = dict.fromkeys( graph.keys(), 0 )
 
         for node_name in graph:
             node = graph[node_name]
 
             for target_node_name in node:
                 edges.append({node_name: target_node_name})
+                edges_per_node[node_name] += 1
 
                 if target_node_name not in discovered_node_names:
                     discovered_node_names.add(target_node_name)
+                    edges_per_node[target_node_name] = 1
+                else:
+                    edges_per_node[target_node_name] += 1
         
         for node_name in discovered_node_names.difference({*graph}):
             graph[node_name] = []
 
-        graphs[graph_name] = {'nodes': {*graph},'edges': edges} 
+        graphs[graph_name] = {'nodes': {*graph},'edges': edges, 'edges per node': edges_per_node} 
 
     return graphs 
 
@@ -46,26 +52,16 @@ def obtain_node_placement_orders(graphs):
 
     for graph in graphs:
         placement_order = []
-        total_edges_per_node = {}
-
-        for node in graphs[graph]['nodes']:
-            total_edges_per_node[node] = 0
-
-            for edge in graphs[graph]['edges']:
-                for key, value in edge.items():
-                    if key == node or value == node:
-                        total_edges_per_node[node] += 1
-
-        placement_order = sorted(total_edges_per_node, key = lambda x: total_edges_per_node[x], reverse = True)
+        placement_order = sorted(graphs[graph]['edges per node'], key = lambda x: graphs[graph]['edges per node'][x], reverse = True)
         placement_orders[graph] = placement_order
 
     return placement_orders
 
-def obtain_node_placements(graphs):
-    node_placements = {}
-
-    for graph in graphs:
-        number_of_nodes = len(graphs[graph]['nodes'])
+#def obtain_node_placements(graphs):
+#    node_placements = {}
+#
+#    for graph in graphs:
+#        number_of_nodes = len(graphs[graph]['nodes'])
 
 
 

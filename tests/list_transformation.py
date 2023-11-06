@@ -32,13 +32,12 @@ class TestTransformInputGraph(unittest.TestCase):
 
         expected_graph = {
                             'nodes': {'A', 'B', 'C', 'D'},
-                            'edges': [{'A': 'B'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}]
+                            'edges': [{'A': 'B'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}],
+                            'edges per node': {'A': 1, 'B': 3, 'C': 2, 'D': 2}
                             }
 
         self.assertEqual(graph, expected_graph)
         
-#new test two graphs
-
     def test_two_graphs(self):
         """
         Test list of nodes and edges for each graph 
@@ -52,7 +51,8 @@ class TestTransformInputGraph(unittest.TestCase):
 
         first_expected_graph = {
                             'nodes': {'A', 'B', 'C', 'D'},
-                            'edges': [{'A': 'B'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}]
+                            'edges': [{'A': 'B'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}],
+                            'edges per node': {'A': 1, 'B': 3, 'C': 2, 'D': 2}
                             }
 
         self.assertEqual(first_graph, first_expected_graph)
@@ -63,10 +63,49 @@ class TestTransformInputGraph(unittest.TestCase):
 
         second_expected_graph = {
                             'nodes': {1, 'a', 2, 'b'},
-                            'edges': [{1: 'a'}, {2: 'b'}]
+                            'edges': [{1: 'a'}, {2: 'b'}],
+                            'edges per node': {1: 1, 2: 1, 'a': 1, 'b': 1}
                             }
 
         self.assertEqual(second_graph, second_expected_graph)
+        
+    def test_multiple_same_edges(self):
+        """
+        Test list of nodes and edges with duplicates 
+        """
+
+        file_path = 'tests/AB_BA_BA_AA'
+        
+        graphs = parse_graph_descriptions(file_path)
+
+        graph = graphs['Graph']
+
+        expected_graph = {
+                            'nodes': {'A', 'B', 'C', 'D'},
+                            'edges': [{'A': 'A'}, {'A': 'B'}, {'B': 'A'}, {'B': 'A'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}],
+                            'edges per node': {'A': 5, 'B': 5, 'C': 2, 'D': 2}
+                            }
+
+        self.assertEqual(graph, expected_graph)
+        
+    def test_multiple_same_self_edges(self):
+        """
+        Test list of nodes and edges with duplicates 
+        """
+
+        file_path = 'tests/AB_BA_BA_AA_AA'
+        
+        graphs = parse_graph_descriptions(file_path)
+
+        graph = graphs['Graph']
+
+        expected_graph = {
+                            'nodes': {'A', 'B', 'C', 'D'},
+                            'edges': [{'A': 'A'}, {'A': 'A'}, {'A': 'B'}, {'B': 'A'}, {'B': 'A'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}],
+                            'edges per node': {'A': 7, 'B': 5, 'C': 2, 'D': 2}
+                            }
+
+        self.assertEqual(graph, expected_graph)
         
 #complicated graphs
 

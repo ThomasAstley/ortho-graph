@@ -1,0 +1,12 @@
+# this is a yaml file
+
+{
+Graph: 
+  { 
+  A: [ A, B ],
+  B: [ A, A, C, D ],
+  C: [ D ]
+  }
+}
+
+

@@ -73,6 +73,15 @@ A: { B, C, ... }
 ```
 Defines edges AB, AC, ...
 
+- uni-directional, from one node to another
+- bi-directional, between two nodes
+- from one node to itself
+
+Multiple edges:
+
+- for each pair of nodes
+- for each node
+
 # Computation
 
 - minimal edge turns
