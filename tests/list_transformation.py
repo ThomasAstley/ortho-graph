@@ -19,14 +19,36 @@ class TestTransformInputGraph(unittest.TestCase):
         
         self.assertEqual(ortho_graph_process.returncode, 10)
 
-    def test_simple_graph(self):
+
+
+    def test_valid_graph_description(self):
         """
-        Test list of nodes and edges 
+        Test valid graph description, exits with code 0
         """
 
-        file_path = 'tests/list_transformation_graph_description_1'
+        file_path = 'tests/AB_BC_BD_CD'
         
-        graphs = parse_graph_descriptions(file_path)
+        ortho_graph_process = subprocess.run(['python', 'src/ortho_graph/main.py', file_path], capture_output = True)
+        
+        self.assertEqual(ortho_graph_process.returncode, 0)
+
+
+
+    def test_parse_simple_graph(self):
+        """
+        Test simple list of nodes and edges 
+        """
+
+        graph_descriptions = {
+                                'Graph': 
+                                  { 
+                                  'A': [ 'B' ],
+                                  'B': [ 'C', 'D' ],
+                                  'C': [ 'D' ]
+                                  }
+                                }
+
+        graphs = parse_graph_descriptions(graph_descriptions)
 
         graph = graphs['Graph']
 
@@ -37,77 +59,102 @@ class TestTransformInputGraph(unittest.TestCase):
                             }
 
         self.assertEqual(graph, expected_graph)
-        
+
+
+
     def test_two_graphs(self):
         """
         Test list of nodes and edges for each graph 
         """
 
-        file_path = 'tests/list_transformation_graph_description_2'
-        
-        graphs = parse_graph_descriptions(file_path)
+        graph_descriptions = {
+                                'Graph': 
+                                  { 
+                                  'A': [ 'B' ],
+                                  'B': [ 'C', 'D' ],
+                                  'C': [ 'D' ]
+                                  },
 
-        first_graph = graphs['Graph']
+                                'A': 
+                                  { 
+                                  1: [ 'a' ],
+                                  2: [ 'b' ], 
+                                  }
+                                }
 
-        first_expected_graph = {
-                            'nodes': {'A', 'B', 'C', 'D'},
-                            'edges': [{'A': 'B'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}],
-                            'edges per node': {'A': 1, 'B': 3, 'C': 2, 'D': 2}
-                            }
+        graphs = parse_graph_descriptions(graph_descriptions)
 
-        self.assertEqual(first_graph, first_expected_graph)
-        
         # ------------------------------------
 
-        second_graph = graphs['A']
+        self.assertEqual(
+            graphs['Graph'],
+            {
+            'nodes': {'A', 'B', 'C', 'D'},
+            'edges': [{'A': 'B'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}],
+            'edges per node': {'A': 1, 'B': 3, 'C': 2, 'D': 2}
+            })
 
-        second_expected_graph = {
-                            'nodes': {1, 'a', 2, 'b'},
-                            'edges': [{1: 'a'}, {2: 'b'}],
-                            'edges per node': {1: 1, 2: 1, 'a': 1, 'b': 1}
-                            }
+        # ------------------------------------
 
-        self.assertEqual(second_graph, second_expected_graph)
+        self.assertEqual(
+            graphs['A'],
+            {
+            'nodes': {1, 'a', 2, 'b'},
+            'edges': [{1: 'a'}, {2: 'b'}],
+            'edges per node': {1: 1, 2: 1, 'a': 1, 'b': 1}
+            })
+
         
     def test_multiple_same_edges(self):
         """
         Test list of nodes and edges with duplicates 
         """
 
-        file_path = 'tests/AB_BA_BA_AA'
-        
-        graphs = parse_graph_descriptions(file_path)
-
-        graph = graphs['Graph']
-
-        expected_graph = {
-                            'nodes': {'A', 'B', 'C', 'D'},
-                            'edges': [{'A': 'A'}, {'A': 'B'}, {'B': 'A'}, {'B': 'A'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}],
-                            'edges per node': {'A': 5, 'B': 5, 'C': 2, 'D': 2}
+        graph_descriptions = {
+                            'Graph': 
+                              { 
+                              'A': [ 'A', 'B' ],
+                              'B': [ 'A', 'A', 'C', 'D' ],
+                              'C': [ 'D' ]
+                              }
                             }
 
-        self.assertEqual(graph, expected_graph)
+        graphs = parse_graph_descriptions(graph_descriptions)
+
+        self.assertEqual(
+                graphs['Graph'],
+                {
+                'nodes': {'A', 'B', 'C', 'D'},
+                'edges': [{'A': 'A'}, {'A': 'B'}, {'B': 'A'}, {'B': 'A'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}],
+                'edges per node': {'A': 5, 'B': 5, 'C': 2, 'D': 2}
+                })
+
         
     def test_multiple_same_self_edges(self):
         """
         Test list of nodes and edges with duplicates 
         """
 
-        file_path = 'tests/AB_BA_BA_AA_AA'
+        graph_descriptions = {
+                                'Graph': 
+                                  { 
+                                  'A': [ 'A', 'A', 'B' ],
+                                  'B': [ 'A', 'A', 'C', 'D' ],
+                                  'C': [ 'D' ]
+                                  }
+                                }
+
+        graphs = parse_graph_descriptions(graph_descriptions)
+
+        self.assertEqual(
+                graphs['Graph'],
+                {
+                'nodes': {'A', 'B', 'C', 'D'},
+                'edges': [{'A': 'A'}, {'A': 'A'}, {'A': 'B'}, {'B': 'A'}, {'B': 'A'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}],
+                'edges per node': {'A': 7, 'B': 5, 'C': 2, 'D': 2}
+                })
+
         
-        graphs = parse_graph_descriptions(file_path)
-
-        graph = graphs['Graph']
-
-        expected_graph = {
-                            'nodes': {'A', 'B', 'C', 'D'},
-                            'edges': [{'A': 'A'}, {'A': 'A'}, {'A': 'B'}, {'B': 'A'}, {'B': 'A'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}],
-                            'edges per node': {'A': 7, 'B': 5, 'C': 2, 'D': 2}
-                            }
-
-        self.assertEqual(graph, expected_graph)
-        
-#complicated graphs
 
 if __name__ == '__main__':
     unittest.main()

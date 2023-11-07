@@ -5,14 +5,17 @@ import sys
 import yaml
 from PrettyPrint import PrettyPrintTree
 
-def parse_graph_descriptions(file_path):
+def load_graphs(file_path):
     with open(file_path) as stream:
         try:
             graph_descriptions = yaml.safe_load(stream)
         except yaml.YAMLError as exception:
             print(exception)
             exit(10)
+    
+    return parse_graph_descriptions(graph_descriptions)
 
+def parse_graph_descriptions(graph_descriptions):
     graphs = {}
 
     for graph_name in graph_descriptions:
@@ -39,7 +42,12 @@ def parse_graph_descriptions(file_path):
         for node_name in discovered_node_names.difference({*graph}):
             graph[node_name] = []
 
-        graphs[graph_name] = {'nodes': {*graph},'edges': edges, 'edges per node': edges_per_node} 
+
+        graphs[graph_name] = {
+            'nodes': {*graph},
+            'edges': edges,
+            'edges per node': dict(sorted(edges_per_node.items(), key = lambda item: item[1], reverse = True))
+            } 
 
     return graphs 
 
@@ -47,33 +55,12 @@ def print_graph(data):
     pt = PrettyPrintTree()
     pt.print_json(data, orientation=PrettyPrintTree.Horizontal)
 
-def obtain_node_placement_orders(graphs):
-    placement_orders = {}
+
+def obtain_node_placements(graphs):
+    node_placements = {}
 
     for graph in graphs:
-        placement_order = []
-        placement_order = sorted(graphs[graph]['edges per node'], key = lambda x: graphs[graph]['edges per node'][x], reverse = True)
-        placement_orders[graph] = placement_order
-
-    return placement_orders
-
-#def obtain_node_placements(graphs):
-#    node_placements = {}
-#
-#    for graph in graphs:
-#        number_of_nodes = len(graphs[graph]['nodes'])
-
-
-
-
-
-
-
-
-
-
-
-
+        number_of_nodes = len(graphs[graph]['nodes'])
 
 
 def main():
@@ -84,10 +71,8 @@ def main():
         # Access the command line arguments
         file_path = sys.argv[1]
 
-    graphs = parse_graph_descriptions(file_path)
-    print('Graphs: ', graphs)
-    placement_orders = obtain_node_placement_orders(graphs)
-    print('placement orders: ', placement_orders)
+    graphs = load_graphs(file_path)
+
     #pt = PrettyPrintTree()
     #pt.print_json(graphs, orientation=PrettyPrintTree.Horizontal)
 
