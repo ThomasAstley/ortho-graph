@@ -5,8 +5,8 @@ Graph:
   B: { D, E, F, G },
   C: { H },
   D: { E, F, G },
-  E: { G }
-  F: { G }
+  E: { G },
+  F: { G },
   G: { H }
   }
 }

@@ -57,10 +57,28 @@ def print_graph(data):
 
 
 def obtain_node_placements(graphs):
-    node_placements = {}
-
+    
     for graph in graphs:
-        number_of_nodes = len(graphs[graph]['nodes'])
+        unique_node_coordinates = set()
+        nodes_with_coordinates = {}
+        add_to_coordinates = [(0,3), (3,0), (0,-3), (-3,0)]
+
+        first_node, first_node_number_of_connections = next(iter(graphs[graph]['edges per node'].items()))
+
+        unique_node_coordinates.add((0,0))
+        nodes_with_coordinates[first_node] = (0,0)
+       
+        connected_nodes = [d[first_node] for d in graphs[graph]['edges'] if first_node in d]
+        connected_nodes = connected_nodes + [key for d in graphs[graph]['edges'] if any(first_node == v for v in d.values()) for key, value in d.items() if value == first_node]
+
+        if first_node_number_of_connections <= 4:
+            for position, node in enumerate(connected_nodes):
+                node_coordinates = (nodes_with_coordinates[first_node][0] + add_to_coordinates[position][0],
+                nodes_with_coordinates[first_node][1] + add_to_coordinates[position][1])
+                unique_node_coordinates.add(node_coordinates)
+                nodes_with_coordinates[node] = node_coordinates
+
+        print('Nodes with their assigned coordinates', nodes_with_coordinates )
 
 
 def main():
@@ -72,7 +90,8 @@ def main():
         file_path = sys.argv[1]
 
     graphs = load_graphs(file_path)
-
+    obtain_node_placements(graphs)
+    print(graphs)
     #pt = PrettyPrintTree()
     #pt.print_json(graphs, orientation=PrettyPrintTree.Horizontal)
 
