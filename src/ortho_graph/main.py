@@ -26,19 +26,31 @@ def parse_graph_descriptions(graph_descriptions):
         edges_per_node = {}
         discovered_node_names = {*graph}
         edges_per_node = dict.fromkeys( graph.keys(), 0 )
+        connected_nodes = dict()        
 
         for node_name in graph:
             node = graph[node_name]
+
+            if connected_nodes.get(node_name) == None:
+                connected_nodes[node_name] = []
 
             for target_node_name in node:
                 edges.append({node_name: target_node_name})
                 edges_per_node[node_name] += 1
 
+                if connected_nodes.get(target_node_name) == None:
+                    connected_nodes[target_node_name] = []
+
+                connected_nodes[node_name].append(target_node_name)
+
                 if target_node_name not in discovered_node_names:
                     discovered_node_names.add(target_node_name)
                     edges_per_node[target_node_name] = 1
+                    connected_nodes[target_node_name].append(node_name)
+
                 else:
                     edges_per_node[target_node_name] += 1
+                    connected_nodes[target_node_name].append(node_name)
         
         for node_name in discovered_node_names.difference({*graph}):
             graph[node_name] = []
@@ -47,7 +59,8 @@ def parse_graph_descriptions(graph_descriptions):
         graphs[graph_name] = {
             'nodes': {*graph},
             'edges': edges,
-            'edges per node': dict(sorted(edges_per_node.items(), key = lambda item: item[1], reverse = True))
+            'edges per node': dict(sorted(edges_per_node.items(), key = lambda item: item[1], reverse = True)),
+            'connected nodes': connected_nodes
             } 
 
     return graphs 
