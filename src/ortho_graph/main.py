@@ -23,9 +23,7 @@ def parse_graph_descriptions(graph_descriptions):
         graph = graph_descriptions[graph_name]
 
         edges = []
-        edges_per_node = {}
         discovered_node_names = {*graph}
-        edges_per_node = dict.fromkeys( graph.keys(), 0 )
         connected_nodes = dict()        
 
         for node_name in graph:
@@ -36,7 +34,6 @@ def parse_graph_descriptions(graph_descriptions):
 
             for target_node_name in node:
                 edges.append({node_name: target_node_name})
-                edges_per_node[node_name] += 1
 
                 if connected_nodes.get(target_node_name) == None:
                     connected_nodes[target_node_name] = []
@@ -45,11 +42,9 @@ def parse_graph_descriptions(graph_descriptions):
 
                 if target_node_name not in discovered_node_names:
                     discovered_node_names.add(target_node_name)
-                    edges_per_node[target_node_name] = 1
                     connected_nodes[target_node_name].append(node_name)
 
                 else:
-                    edges_per_node[target_node_name] += 1
                     connected_nodes[target_node_name].append(node_name)
         
         for node_name in discovered_node_names.difference({*graph}):
@@ -57,10 +52,8 @@ def parse_graph_descriptions(graph_descriptions):
 
 
         graphs[graph_name] = {
-            'nodes': {*graph},
             'edges': edges,
-            'edges per node': dict(sorted(edges_per_node.items(), key = lambda item: item[1], reverse = True)),
-            'connected nodes': connected_nodes
+            'nodes': connected_nodes
             } 
 
     return graphs 
@@ -80,7 +73,7 @@ def place_nodes(graphs):
         placed_nodes = {}
         offsets = [(0,3), (3,0), (0,-3), (-3,0)]
 
-        for node_name, connections in graph['edges per node'].items():
+        for node_name, connections in graph['nodes'].items():
                 
             used_coordinates.add((0,0))
             placed_nodes[node_name] = (0,0)
@@ -98,7 +91,7 @@ def place_nodes(graphs):
                     if dst_node == node_name:
                         node_edges.append(dst_node)
 
-            if connections <= 4:
+            if len(connections) <= 4:
                 for position, dst_node in enumerate(node_edges):
 
                     dst_node_coordinate = (
