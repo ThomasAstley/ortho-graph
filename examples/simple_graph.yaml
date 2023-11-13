@@ -4,9 +4,11 @@
 Graph: 
   { 
   A: { B },           # node A has an edge to node B
-  B: { C, D },        # node B has edges to nodes C and D
+  B: { C, D, AA },        # node B has edges to nodes C and D
   C: { D },
-  E: {}
+  E: { A, F },
+  F: { B, D, E, X, Y, Z },
+  G: {}
   }
 }
 

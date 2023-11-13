@@ -62,6 +62,36 @@ def print_graph(data):
     pt = PrettyPrintTree()
     pt.print_json(data, orientation=PrettyPrintTree.Horizontal)
 
+def new_coordinate(src_coordinate, node_name, used_coordinates):
+    
+    offsets = [(0,3), (3,0), (0,-3), (-3,0)]
+
+    new_coordinate = src_coordinate
+    offset_index = 0
+
+    while new_coordinate in used_coordinates:
+        new_coordinate = ( src_coordinate[0] + offsets[offset_index][0], src_coordinate[1] + offsets[offset_index][1])
+        offset_index += 1
+        
+        if offset_index > 3:
+            for position, offset in enumerate(offsets):
+                if offset[0] != 0:
+                    offset_x = offset[0] + 3
+                else:
+                    offset_x = 0
+
+                if offset[1] != 0:
+                    offset_y = offset[1] + 3
+                else:
+                    offset_y = 0
+
+                offsets[position] = (offset_x, offset_y)
+
+            offset_index = 0
+
+    print('node: ', node_name, 'new coordinate: ' , new_coordinate)
+
+    return new_coordinate
 
 def place_nodes(graphs):
     
@@ -73,35 +103,24 @@ def place_nodes(graphs):
         placed_nodes = {}
         offsets = [(0,3), (3,0), (0,-3), (-3,0)]
 
-        for node_name, connections in graph['nodes'].items():
-                
-            used_coordinates.add((0,0))
-            placed_nodes[node_name] = (0,0)
-            node_edges = []
+        for node_name, connected_nodes in graph['nodes'].items():
+            print('\nplaced nodes: ', placed_nodes)
+            print('placing node: ' , node_name, 'connected nodes: ', connected_nodes) 
+            if placed_nodes.get(node_name) == None:
+                node_coordinate = new_coordinate((0, 0), node_name, used_coordinates)
 
-            for edge in graph['edges']:
-                print('edge: ', end='')
-                pp.pprint(edge)
+                placed_nodes[node_name] = node_coordinate
+                print('node: ', node_name, 'coordinate: ', node_coordinate)
+                used_coordinates.add(node_coordinate)
+            
+            for connected_node in connected_nodes:
+                if placed_nodes.get(connected_node) == None:
+                    connected_node_coordinates = new_coordinate(placed_nodes[node_name], connected_node, used_coordinates)
 
-                for src_node, dst_node in edge.items():
-
-                    if src_node == node_name:
-                        node_edges.append(src_node) 
-
-                    if dst_node == node_name:
-                        node_edges.append(dst_node)
-
-            if len(connections) <= 4:
-                for position, dst_node in enumerate(node_edges):
-
-                    dst_node_coordinate = (
-                                            placed_nodes[node_name][0] + offsets[position][0],
-                                            placed_nodes[node_name][1] + offsets[position][1]
-                                            )
-
-                    used_coordinates.add(dst_node_coordinate)
+                    placed_nodes[connected_node] = connected_node_coordinates
+                    print('connected node: ', connected_node, 'coordinate: ', connected_node_coordinates)
+                    used_coordinates.add(connected_node_coordinates)
                    
-                    placed_nodes[dst_node] = dst_node_coordinate
 
         graph['placed nodes'] = placed_nodes
 
