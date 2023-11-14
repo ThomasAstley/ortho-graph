@@ -4,7 +4,7 @@ import unittest
 import pprint
 import subprocess
 
-from src.ortho_graph.main import parse_graph_descriptions, print_graph 
+from src.ortho_graph.main import parse_graph_descriptions, print_graph, place_nodes  
 
 
 class TestTransformInputGraph(unittest.TestCase):
@@ -53,9 +53,8 @@ class TestTransformInputGraph(unittest.TestCase):
         graph = graphs['Graph']
 
         expected_graph = {
-                            'nodes': {'A', 'B', 'C', 'D'},
                             'edges': [{'A': 'B'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}],
-                            'edges per node': {'A': 1, 'B': 3, 'C': 2, 'D': 2}
+                            'nodes': {'A': ['B'], 'B': ['A', 'C', 'D'], 'C': ['B', 'D'], 'D': ['B', 'C']},
                             }
 
         self.assertEqual(graph, expected_graph)
@@ -89,9 +88,8 @@ class TestTransformInputGraph(unittest.TestCase):
         self.assertEqual(
             graphs['Graph'],
             {
-            'nodes': {'A', 'B', 'C', 'D'},
             'edges': [{'A': 'B'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}],
-            'edges per node': {'A': 1, 'B': 3, 'C': 2, 'D': 2}
+            'nodes': {'A': ['B'], 'B': ['A', 'C', 'D'], 'C': ['B', 'D'], 'D': ['B', 'C']},
             })
 
         # ------------------------------------
@@ -99,9 +97,8 @@ class TestTransformInputGraph(unittest.TestCase):
         self.assertEqual(
             graphs['A'],
             {
-            'nodes': {1, 'a', 2, 'b'},
             'edges': [{1: 'a'}, {2: 'b'}],
-            'edges per node': {1: 1, 2: 1, 'a': 1, 'b': 1}
+            'nodes': {1: ['a'], 'a': [1], 2: ['b'], 'b': [2]},
             })
 
         
@@ -124,9 +121,8 @@ class TestTransformInputGraph(unittest.TestCase):
         self.assertEqual(
                 graphs['Graph'],
                 {
-                'nodes': {'A', 'B', 'C', 'D'},
                 'edges': [{'A': 'A'}, {'A': 'B'}, {'B': 'A'}, {'B': 'A'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}],
-                'edges per node': {'A': 5, 'B': 5, 'C': 2, 'D': 2}
+                'nodes': {'A': ['A', 'A', 'B', 'B', 'B'], 'B': ['A', 'A', 'A', 'C', 'D'], 'C':['B', 'D'], 'D':['B', 'C']}
                 })
 
         
@@ -149,12 +145,57 @@ class TestTransformInputGraph(unittest.TestCase):
         self.assertEqual(
                 graphs['Graph'],
                 {
-                'nodes': {'A', 'B', 'C', 'D'},
                 'edges': [{'A': 'A'}, {'A': 'A'}, {'A': 'B'}, {'B': 'A'}, {'B': 'A'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}],
-                'edges per node': {'A': 7, 'B': 5, 'C': 2, 'D': 2}
+                'nodes': {'A': ['A', 'A', 'A', 'A', 'B', 'B', 'B'], 'B': ['A', 'A', 'A', 'C', 'D'], 'C':['B', 'D'], 'D':['B', 'C']}
                 })
 
+    def test_node_placement(self):
+        """
+        Test node placement for simple graph
+        """
         
+        graphs = parse_graph_descriptions({
+                                            'Graph': 
+                                              { 
+                                              'A': [ 'B' ],
+                                              'B': [ 'C', 'D' ],
+                                              'C': [ 'D' ]
+                                              }
+                                            })
+        
+        place_nodes(graphs)
+
+        self.assertEqual(
+                graphs['Graph'],
+                {
+                'edges': [{'A': 'B'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}],
+                'nodes': {'A': ['B'], 'B': ['A', 'C', 'D'], 'C':['B', 'D'], 'D':['B', 'C']},
+                'placed nodes':{'A': (0, 0), 'B': (0, 3), 'C': (0, 6), 'D': (3, 3)}
+                })
+
+    def test_node_placement_many_edges(self):
+        """
+        Test node placement for a node with many edges
+        """
+
+        graphs = parse_graph_descriptions({
+                                            'Graph':
+                                                {
+                                                'A': [1, 2, 3, 4, 5, 6, 7, 8, 9]
+                                                }
+                                            })
+
+        place_nodes(graphs)
+
+        self.assertEqual(
+            graphs['Graph'],
+            {
+            'edges': [   {'A': 1}, {'A': 2}, {'A': 3}, {'A': 4}, {'A': 5}, {'A': 6}, {'A': 7}, {'A': 8}, {'A': 9}],
+            'nodes': {   1: ['A'], 2: ['A'], 3: ['A'], 4: ['A'], 5: ['A'], 6: ['A'], 7: ['A'], 8: ['A'], 9: ['A'], 'A': [1, 2, 3, 4, 5, 6, 7, 8, 9]},
+            'placed nodes': {   1: (0, 3), 2: (3, 0), 3: (0, -3), 4: (-3, 0), 5: (0, 6), 6: (6, 0), 7: (0, -6), 8: (-6, 0), 9: (0, 9), 'A': (0, 0)}
+            })
+
+
 
 if __name__ == '__main__':
     unittest.main()
