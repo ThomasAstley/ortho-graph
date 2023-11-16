@@ -5,6 +5,8 @@ import sys
 import yaml
 # from PrettyPrint import PrettyPrintTree
 import pprint
+from optparse import OptionParser
+import json
 
 def load_graphs(file_path):
     with open(file_path) as stream:
@@ -119,34 +121,59 @@ def place_nodes(graphs):
                     placed_nodes[connected_node] = connected_node_coordinates
                     used_coordinates.add(connected_node_coordinates)
                    
+        graph['placed nodes'] = {}
 
-        graph['placed nodes'] = placed_nodes
+        for node_name, coordinate in placed_nodes.items():
+            graph['placed nodes'][node_name] = list(coordinate)
 
-def generate_asciio_graph(graphs):
+
+def canonize_placed_nodes(graphs):
 
     for graph in graphs.values():
-        print("use App::Asciio::Scripting ;")
+        
+        min_x = 0
+        min_y = 0
 
-        for node_name, position in graph['placed nodes'].items():
-            print("add '%s', new_text(TEXT_ONLY =>'%s'), %d, %d ;" % (node_name, node_name, position[0], position[1]))
+        for coordinate in graph['placed nodes'].values():
+            if coordinate[0] < min_x:
+                min_x = coordinate[0]
 
-        print("print to_ascii ;")
+            if coordinate[1] < min_y:
+                min_y = coordinate[1]
+
+        
+        for coordinate in graph['placed nodes'].values():
+            coordinate[0] -= min_x
+            coordinate[1] -= min_y
+
+
+def generate_json(graphs):
+
+    print(json.dumps(graphs))
 
 def main():
-    if len(sys.argv) != 2:
+
+    parser = OptionParser()
+
+    parser.add_option("-f", "--file", dest="file_path", metavar="graph_description.yaml")
+    parser.add_option("--json", action="store_true", dest="json", help="Output json to stdout")
+    (options, args) = parser.parse_args()
+
+    if options.file_path is None:
         print("Usage: ortho-graph graph_description.yaml")
         exit(2)
-    else:
-        # Access the command line arguments
-        file_path = sys.argv[1]
 
     pp = pprint.PrettyPrinter(indent=4)
 
-    graphs = load_graphs(file_path)
+    graphs = load_graphs(options.file_path)
 
     place_nodes(graphs)
-    generate_asciio_graph(graphs)
+    
+    canonize_placed_nodes(graphs)
 
+    if options.json:
+        generate_json(graphs)
+    
     #pp.pprint(graphs)
     #pt = PrettyPrintTree()
     #pt.print_json(graphs, orientation=PrettyPrintTree.Horizontal)

@@ -8,7 +8,7 @@ ortho-graph graph_description.yaml
 
 cat graph_description.yaml | ortho-graph 
 
-cat yaml/json/perl/xml/dot | translator | ortho-graph | visualisation-tool
+cat yaml/json/perl/xml/dot | translator | ortho-graph --json | visualisation-tool
 ```
 
 # Graph description (input)

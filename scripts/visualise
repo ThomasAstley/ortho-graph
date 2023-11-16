@@ -1,0 +1,4 @@
+#!/bin/bash
+
+/home/tom-kubuntu/tom/devel/ortho-graph/src/ortho_graph/main.py --json -f "$1" | ./scripts/json_to_asciio_graph
+

@@ -1,0 +1,40 @@
+#!/bin/env perl
+
+use strict ; use warnings ;
+use JSON ;
+
+undef $/ ;
+my $json = <STDIN> ;
+my $graphs = from_json $json ;
+
+# my $graphs = 
+# 	{
+# 	graph =>
+# 		{
+# 		'placed nodes' =>
+# 			{
+# 			A => [1, 2],
+# 			B => [3, 4],
+# 			}
+# 		}
+# 	} ;
+
+for my $graph (values $graphs->%*)
+	{
+	my $script = "use App::Asciio::Scripting ;\n" ;
+	
+	while (my ($node_name, $position) = each $graph->{'placed nodes'}->%*)
+		{
+		$script .= sprintf "add '%s', new_text(TEXT_ONLY =>'%s'), %d, %d ;\n", $node_name, $node_name, $position->[0], $position->[1] ;
+		}
+	
+	$script .= "print to_ascii ;\n" ;
+
+	eval $script ;
+	}
+
+
+# print to_json $graphs ;
+
+
+#vim: set ft=perl :
