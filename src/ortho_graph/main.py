@@ -122,6 +122,15 @@ def place_nodes(graphs):
 
         graph['placed nodes'] = placed_nodes
 
+def generate_asciio_graph(graphs):
+
+    for graph in graphs.values():
+        print("use App::Asciio::Scripting ;")
+
+        for node_name, position in graph['placed nodes'].items():
+            print("add '%s', new_text(TEXT_ONLY =>'%s'), %d, %d ;" % (node_name, node_name, position[0], position[1]))
+
+        print("print to_ascii ;")
 
 def main():
     if len(sys.argv) != 2:
@@ -136,8 +145,9 @@ def main():
     graphs = load_graphs(file_path)
 
     place_nodes(graphs)
-    
-    pp.pprint(graphs)
+    generate_asciio_graph(graphs)
+
+    #pp.pprint(graphs)
     #pt = PrettyPrintTree()
     #pt.print_json(graphs, orientation=PrettyPrintTree.Horizontal)
 
