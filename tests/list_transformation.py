@@ -4,7 +4,7 @@ import unittest
 import pprint
 import subprocess
 
-from src.ortho_graph.main import parse_graph_descriptions, print_graph, place_nodes  
+from src.ortho_graph.main import parse_graph_descriptions, print_graph, place_nodes, surrounding_coordinates  
 
 
 class TestTransformInputGraph(unittest.TestCase):
@@ -15,7 +15,7 @@ class TestTransformInputGraph(unittest.TestCase):
         
         file_path = 'tests/list_transformation_invalid_graph_description'
         
-        ortho_graph_process = subprocess.run(['python', 'src/ortho_graph/main.py', file_path], capture_output = True)
+        ortho_graph_process = subprocess.run(['python', 'src/ortho_graph/main.py', '--json', '-f', file_path], capture_output = True)
         
         self.assertEqual(ortho_graph_process.returncode, 10)
 
@@ -28,8 +28,8 @@ class TestTransformInputGraph(unittest.TestCase):
 
         file_path = 'tests/AB_BC_BD_CD'
         
-        ortho_graph_process = subprocess.run(['python', 'src/ortho_graph/main.py', file_path], capture_output = True)
-        
+        ortho_graph_process = subprocess.run(['python', 'src/ortho_graph/main.py', '--json', '-f', file_path], capture_output = True)
+
         self.assertEqual(ortho_graph_process.returncode, 0)
 
 
@@ -170,7 +170,7 @@ class TestTransformInputGraph(unittest.TestCase):
                 {
                 'edges': [{'A': 'B'}, {'B': 'C'}, {'B': 'D'}, {'C': 'D'}],
                 'nodes': {'A': ['B'], 'B': ['A', 'C', 'D'], 'C':['B', 'D'], 'D':['B', 'C']},
-                'placed nodes':{'A': (0, 0), 'B': (0, 3), 'C': (0, 6), 'D': (3, 3)}
+                'placed nodes':{'A': [0, 0], 'B': [0, 3], 'C': [0, 6], 'D': [3, 3]}
                 })
 
     def test_node_placement_many_edges(self):
@@ -192,8 +192,23 @@ class TestTransformInputGraph(unittest.TestCase):
             {
             'edges': [   {'A': 1}, {'A': 2}, {'A': 3}, {'A': 4}, {'A': 5}, {'A': 6}, {'A': 7}, {'A': 8}, {'A': 9}],
             'nodes': {   1: ['A'], 2: ['A'], 3: ['A'], 4: ['A'], 5: ['A'], 6: ['A'], 7: ['A'], 8: ['A'], 9: ['A'], 'A': [1, 2, 3, 4, 5, 6, 7, 8, 9]},
-            'placed nodes': {   1: (0, 3), 2: (3, 0), 3: (0, -3), 4: (-3, 0), 5: (0, 6), 6: (6, 0), 7: (0, -6), 8: (-6, 0), 9: (0, 9), 'A': (0, 0)}
+            'placed nodes': {   1: [0, 3], 2: [3, 0], 3: [0, -3], 4: [-3, 0], 5: [0, 6], 6: [6, 0], 7: [0, -6], 8: [-6, 0], 9: [0, 9], 'A': [0, 0]}
             })
+
+    def test_surrounding_coordinates(self):
+        """
+        Test surrounding coordinates of a node
+        """
+
+        surrounding_coordinates_list = surrounding_coordinates(0, 0, 0)
+        self.assertEqual(surrounding_coordinates_list, [[0, 0]])
+
+        surrounding_coordinates_list = surrounding_coordinates(0, 0, 1)
+        self.assertEqual(surrounding_coordinates_list, [[-1, 1], [-1, -1], [0, 1], [0, -1], [1, 1], [1, -1], [1, 0], [-1, 0]])
+
+        surrounding_coordinates_list = surrounding_coordinates(0, 0, 2)
+        self.assertEqual(surrounding_coordinates_list, [[-2, 2], [-2, -2], [-1, 2], [-1, -2], [0, 2], [0, -2], [1, 2], [1, -2], [2, 2], [2, -2], [2, -1], [-2, -1], [2, 0], [-2, 0], [2, 1], [-2, 1]])
+
 
 
 

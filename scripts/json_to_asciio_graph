@@ -19,13 +19,15 @@ my $graphs = from_json $json ;
 # 		}
 # 	} ;
 
+my $object_type = ($ARGV[0]//'') eq 'box' ? 'new_box' : 'new_text' ;
+
 for my $graph (values $graphs->%*)
 	{
 	my $script = "use App::Asciio::Scripting ;\n" ;
 	
 	while (my ($node_name, $position) = each $graph->{'placed nodes'}->%*)
 		{
-		$script .= sprintf "add '%s', new_text(TEXT_ONLY =>'%s'), %d, %d ;\n", $node_name, $node_name, $position->[0], $position->[1] ;
+		$script .= sprintf "add '%s', $object_type(TEXT_ONLY =>'%s'), %d, %d ;\n", $node_name, $node_name, $position->[0], $position->[1] ;
 		}
 	
 	$script .= "print to_ascii ;\n" ;

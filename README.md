@@ -7,25 +7,17 @@
 
 # SYNOPSIS
 
-	ortho-graph graph_description.yaml
+	ortho-graph --file graph_description.yaml
 
 	cat graph_description.yaml | ortho-graph 
+
+    cat yaml/json/perl/xml/dot | translator | ortho-graph --json | visualisation-tool
 
 # DESCRIPTION
 
 Given a graph description, compute orthogonal routes between the graphs nodes.
 
-## Definitions
-
-### Graph 
-
 A graph ‘G’ is a set of nodes 'n' connected by directional edges 'e': G = (n, e)
-
-#### Synonyms
-
-- node: vertex
-
-### Edge
 
 An edge is either:
 
@@ -33,16 +25,68 @@ An edge is either:
 - bi-directional, between two nodes
 - from one node to itself
 
+There can be multiple edges:
+
+- between each pair of nodes
+- from a node to itself
+
+## Computation
+
+- minimal edge turns
+- minimal edge overlap
+
+# OPTIONS      
+
+--json -gives json format as output
+
+--file -graph description file path 
+
+# INPUT
+
+The graph description is in YAML format. (https://yaml.org/)
+
+## node
+
+- no coordinates, default case
+- specify node coordinates
+- computed given another node as origin and direction
+- node shape
+    - size width/ length
+    - size computed based on label
+
+## edge
+
+```
+A: { B, C, ... }
+```
+
+Defines edges AB, AC, ...
+
+- uni-directional, from one node to another
+- bi-directional, between two nodes
+- from one node to itself
+- edge start, end
+
 Multiple edges:
 
 - for each pair of nodes
 - for each node
 
-### Group
+## user attributes
 
-Set of nodes sharing a common attribute
+passed as-is to output
 
-# OPTIONS      
+```
+user_attributes = { ... }
+```
+
+# OUTPUT 
+
+The output is in JSON format
+
+```
+{"Graph": {"placed nodes": {"A": [0, 0], "B": [0, 3], "D": [3, 0], "C": [0, 6]}}}
+```
 
 # EXIT STATUS  
 
@@ -55,10 +99,6 @@ Set of nodes sharing a common attribute
 # DOCUMENTATION
 
 # EXAMPLES
-
-
-
-
 
 # COPYRIGHT AND LICENSE  
 
