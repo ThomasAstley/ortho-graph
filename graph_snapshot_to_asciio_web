@@ -1,0 +1,2 @@
+#!/bin/bash
+cat graph_snapshot | perl json_to_asciio_script | stdin_to_asciio_web

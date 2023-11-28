@@ -11,10 +11,12 @@ my $graphs = from_json $json ;
 # 	{
 # 	graph =>
 # 		{
-# 		'placed nodes' =>
+# 		A =>
 # 			{
-# 			A => [1, 2],
-# 			B => [3, 4],
+# 			name => 'A',
+# 			edges => ['B', 'C'],
+# 			neighbours => ['B', 'C', 'D'],
+# 			position => [3, 4],
 # 			}
 # 		}
 # 	} ;
@@ -25,8 +27,11 @@ for my $graph (values $graphs->%*)
 	{
 	my $script = "use App::Asciio::Scripting ;\n" ;
 	
-	while (my ($node_name, $position) = each $graph->{'placed nodes'}->%*)
+	for my $node (values $graph->%*)
 		{
+		my $position = $node->{position} ;
+		my $node_name = $node->{name} ;
+
 		$script .= sprintf "add '%s', $object_type(TEXT_ONLY =>'%s'), %d, %d ;\n", $node_name, $node_name, $position->[0], $position->[1] ;
 		}
 	

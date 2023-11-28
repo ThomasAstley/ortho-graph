@@ -3,7 +3,7 @@
 {
 Graph: 
   { 
-  A: { B },           # node A has an edge to node B
+  A: { B },              # node A has an edge to node B
   B: { C, D, E },        # node B has edges to nodes C and D
   C: { D },
   E: { A },
