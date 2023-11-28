@@ -9,6 +9,8 @@ my $graph = from_json $json ;
 
 # 	graph =>
 # 		{
+# 		grid_upper_boundary => integer,
+# 		
 # 		A =>
 # 			{
 # 			name => 'A',
@@ -20,18 +22,31 @@ my $graph = from_json $json ;
 
 my $object_type = ($ARGV[0]//'') eq 'box' ? 'new_box' : 'new_text' ;
 
-my $script = "use App::Asciio::Scripting ;\n" ;
+my $script = '' ; #"use App::Asciio::Scripting ;\n" ;
+
+$script .= "create_undo_snapshot ;\n" ;
 $script .= "select_all_elements ;\n" ;
 $script .= "delete_selected_elements ;\n" ;
 
-for my $node (values $graph->%*)
+$script .= "delete_all_ruler_lines ;\n" ;
+$script .= "add_ruler_line 'vertical', $graph->{grid_upper_boundary} ;\n" ;
+$script .= "add_ruler_line 'horizontal', $graph->{grid_upper_boundary} ;\n" ;
+
+delete $graph->{grid_upper_boundary} ;
+
+my $coordinates = '' ;
+
+for my $node (sort { $a->{name} cmp $b->{name} } values $graph->%*)
 	{
 	my $position = $node->{position} ;
 	my $node_name = $node->{name} ;
 
 	$script .= sprintf "add '%s', $object_type(TEXT_ONLY =>'%s'), %d, %d ;\n", $node_name, $node_name, $position->[0], $position->[1] ;
+
+	$coordinates .= "$node_name: $position->[0], $position->[1]\n" ;
 	}
 
+$script .= sprintf "add 'coordinates', new_box(TEXT_ONLY => '%s'), 50, 0 ;", $coordinates ;
 print $script ;
 
 

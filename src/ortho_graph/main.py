@@ -113,7 +113,9 @@ def place_nodes(graphs):
 
 def simulate_annealing(graphs):
     for graph_name, graph in graphs.items():
-        min_grid_size       = 5 * np.sqrt(len(graph))
+        min_nodes_grid       = np.sqrt(len(graph))
+        min_grid_size       = 2 * min_nodes_grid
+
         grid_upper_boundary = int(2.5 * min_grid_size)
         grid_lower_boundary = int(-2.5 * min_grid_size)
 
@@ -121,7 +123,7 @@ def simulate_annealing(graphs):
         # debug_to_file('randomly placed nodes:       ' + str(graph))
 
         temperature          = 2 * min_grid_size
-        cooling_rate         = 0.95
+        cooling_rate         = 0.80
         compact_direction    = HORIZONTAL
 
         while temperature > 1:
@@ -161,6 +163,8 @@ def display_graph_in_asciio(graph, grid_upper_boundary):
     graph_copy = copy.deepcopy(graph)
     # canonize_node_positions(graph_copy)
     map_node_positions(graph_copy, grid_upper_boundary)
+
+    graph_copy['grid_upper_boundary'] = grid_upper_boundary
 
     generate_json(graph_copy, 'graph_snapshot')
     
@@ -284,7 +288,8 @@ def compact_coefficient(annealing_iterations, current_iteration):
 def move_nodes_to_neighbours_median(graph, temperature, grid_lower_boundary, grid_upper_boundary):
     for node_name, node in graph.items():
         if not node['neighbours']:
-            debug('Node: ', node_name, ' has no neighbours')
+            # debug('Node: ', node_name, ' has no neighbours')
+            place_nearby(graph, node_name, 0, 0, grid_lower_boundary, grid_upper_boundary)
             continue
 
         neighbours_x = []
@@ -466,4 +471,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
