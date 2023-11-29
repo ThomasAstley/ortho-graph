@@ -129,12 +129,9 @@ def simulate_annealing(graphs):
         while temperature > 1:
             move_nodes_to_neighbours_median(graph, temperature, grid_lower_boundary, grid_upper_boundary)
             
-            display_graph_in_asciio(graph, grid_upper_boundary)
+            # display_graph_in_asciio(graph, grid_upper_boundary)
 
             temperature *= cooling_rate
-
-        # compact_grid(graph, HORIZONTAL, 1)
-        # compact_grid(graph, not HORIZONTAL, 1)
 
         debug_to_file('placed nodes:                 ' + str(graph))
         
@@ -158,17 +155,57 @@ def simulate_annealing(graphs):
         canonize_node_positions(graph)
         debug_to_file('canonized placed nodes sized: ' + str(graph))
         
+import time
+def display_graph_in_asciio(graph, grid_upper_boundary, current_node, median_x, median_y):
+    script  = bytes("stop_updating_display ;", 'utf-8')
+    script += bytes("select_all_elements ; delete_selected_elements ;", 'utf-8')
 
-def display_graph_in_asciio(graph, grid_upper_boundary):
-    graph_copy = copy.deepcopy(graph)
-    # canonize_node_positions(graph_copy)
-    map_node_positions(graph_copy, grid_upper_boundary)
+    info = {}
+    info['grid_upper_boundary'] = grid_upper_boundary
+    info['current_node'] = current_node
+    info['median_x'] = median_x
+    info['median_y'] = median_y
 
-    graph_copy['grid_upper_boundary'] = grid_upper_boundary
+    result = subprocess.run(
+                ["json_dtd_to_asciio_script", "info:", "30", "0", "", "1"], 
+                input=bytes(json.dumps(info), 'utf-8'), 
+                capture_output = True)
 
-    generate_json(graph_copy, 'graph_snapshot')
+    script += result.stdout
+
+    script += graph_to_asciio_script(graph, grid_upper_boundary, 0)
+
+    median_node = {}
+    median_node['x'] = {'name': 'x', 'position': [median_x, median_y]}
+
+    script += graph_to_asciio_script(median_node, grid_upper_boundary, 0)
     
-    subprocess.run(["./graph_snapshot_to_asciio_web"])
+    script += bytes("start_updating_display ;", 'utf-8')
+
+    subprocess.run(["xh", "-f", "POST", "http://localhost:4444/script",  bytes("script=", 'utf-8') + script])
+
+    time.sleep(0.005)
+
+
+def graph_to_asciio_script(graph, boundary, box):
+    object_type = 'new_box' if box else 'new_text'
+
+    script = bytes(
+                "create_undo_snapshot ;\n" +
+                "delete_all_ruler_lines ;\n" +
+                "add_ruler_line 'vertical',"   + str(boundary)     + ";\n" +
+                "add_ruler_line 'horizontal'," + str(boundary + 1) + ";\n", 'utf-8') 
+
+    for node in graph.values():
+        position  = node['position']
+        node_name = node['name']
+
+        script += bytes(
+                    ("add '%s', " + object_type + "(TEXT_ONLY =>'%s'), %d, %d ;\n") % 
+                        (node_name, node_name, position[0] + boundary, -position[1] + boundary ), 
+                    'utf-8')
+
+    return script
 
 
 def get_nodes_to_the_right(pivot_node, placed_nodes):
@@ -300,13 +337,19 @@ def move_nodes_to_neighbours_median(graph, temperature, grid_lower_boundary, gri
             neighbours_y.append(graph[neighbour]['position'][Y_AXIS])
         
         random_x = random.uniform(-temperature, temperature)
-        x        = np.clip(int(statistics.median(neighbours_x) + random_x ), grid_lower_boundary, grid_upper_boundary)
+        median_x = statistics.median(neighbours_x)
+        x        = np.clip(int(median_x + random_x), grid_lower_boundary, grid_upper_boundary)
 
         random_y = random.uniform(-temperature, temperature)
-        y        = np.clip(int(statistics.median(neighbours_y) + random_y ), grid_lower_boundary, grid_upper_boundary)
+        median_y = statistics.median(neighbours_y)
+        y        = np.clip(int(median_y + random_y), grid_lower_boundary, grid_upper_boundary)
+
+        display_graph_in_asciio(graph, grid_upper_boundary, node_name, median_x, median_y)
 
         place_nearby(graph, node_name, int(x), int(y), grid_lower_boundary, grid_upper_boundary)
         
+        display_graph_in_asciio(graph, grid_upper_boundary, node_name, median_x, median_y)
+
 
 def place_nearby(graph, node_name, x, y, grid_lower_boundary, grid_upper_boundary):
     coordinates_in_use = []

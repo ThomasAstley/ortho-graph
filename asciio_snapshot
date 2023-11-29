@@ -1,5 +1,0 @@
-script=$(json_to_script "$1")
-
-
-
-xh -f POST http://localhost:4444/script script="$script"
