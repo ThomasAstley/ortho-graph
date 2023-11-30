@@ -156,22 +156,19 @@ def simulate_annealing(graphs):
         debug_to_file('canonized placed nodes sized: ' + str(graph))
         
 import time
+import requests
+
 def display_graph_in_asciio(graph, grid_upper_boundary, current_node, median_x, median_y):
-    script  = bytes("stop_updating_display ;", 'utf-8')
-    script += bytes("select_all_elements ; delete_selected_elements ;", 'utf-8')
+    script = bytes("select_all_elements ; delete_selected_elements ;", 'utf-8')
 
     info = {}
-    info['grid_upper_boundary'] = grid_upper_boundary
-    info['current_node'] = current_node
+    info['node']     = current_node
     info['median_x'] = median_x
     info['median_y'] = median_y
 
-    result = subprocess.run(
-                ["json_dtd_to_asciio_script", "info:", "30", "0", "", "1"], 
-                input=bytes(json.dumps(info), 'utf-8'), 
-                capture_output = True)
-
-    script += result.stdout
+    script += bytes(
+                ("add 'info', new_text(TEXT_ONLY =>\"%s\"), 30, 0 ;\n") % (pp.pformat(info))
+                , 'utf-8')
 
     script += graph_to_asciio_script(graph, grid_upper_boundary, 0)
 
@@ -179,12 +176,14 @@ def display_graph_in_asciio(graph, grid_upper_boundary, current_node, median_x, 
     median_node['x'] = {'name': 'x', 'position': [median_x, median_y]}
 
     script += graph_to_asciio_script(median_node, grid_upper_boundary, 0)
+    script += bytes("select_by_name 'x' ;", 'utf-8')
+    script += bytes("change_selected_elements_color 0, [1, 0, 0] ;", 'utf-8')
+    script += bytes("deselect_all_elements 'x' ;", 'utf-8')
     
-    script += bytes("start_updating_display ;", 'utf-8')
+    # subprocess.run(["xh", "-f", "POST", "http://localhost:4444/script",  bytes("script=", 'utf-8') + script])
 
-    subprocess.run(["xh", "-f", "POST", "http://localhost:4444/script",  bytes("script=", 'utf-8') + script])
-
-    time.sleep(0.005)
+    answer = requests.post('http://localhost:4444/script', data = {'script': script, 'show_script': 0})
+    time.sleep(0.002)
 
 
 def graph_to_asciio_script(graph, boundary, box):
@@ -499,7 +498,8 @@ def main():
         print("Usage: ortho-graph graph_description.yaml")
         exit(2)
 
-    pp = pprint.PrettyPrinter(indent=4)
+    global pp
+    pp = pprint.PrettyPrinter(indent=1, width=20, sort_dicts=False)
 
     graphs = load_graphs(options.file_path)
     # pp.pprint(graphs)
